@@ -1,0 +1,19 @@
+[Unit]
+Description=Mailoney SMTP Honeypot
+Documentation=https://github.com/awhitehatter/mailoney
+After=network.target
+Wants=syslog.target
+
+[Service]
+Type=exec
+User=someuser
+Group=someuser
+ExecStart=/home/someuser/mailoney/venv/bin/python mailoney.py -p 10025 -s mail.me.org -t schizo_open_relay
+WorkingDirectory=/home/someuser/mailoney
+Restart=on-failure
+TimeoutSec=300
+PermissionsStartOnly=yes
+ExecStartPre=/sbin/iptables -t nat -A PREROUTING -p tcp --dport 25 -j REDIRECT --to-port 10025
+
+[Install]
+WantedBy=multi-user.target
